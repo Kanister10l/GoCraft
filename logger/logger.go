@@ -8,8 +8,10 @@ import (
 	"go.uber.org/zap"
 )
 
+// Logger ...
 var Logger *zap.SugaredLogger
 
+// SetupLogger ...
 func SetupLogger() {
 	logger, err := zap.NewProduction()
 

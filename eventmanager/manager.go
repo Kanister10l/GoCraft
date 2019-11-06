@@ -7,21 +7,28 @@ import (
 	"github.com/ztrue/tracerr"
 )
 
+// Master ...
 var Master *Manager
 
+// Manager ...
 type Manager struct {
 	EventsMap map[string]*Event
 }
 
+// Event ...
 type Event struct {
 	Handlers []EventHandler
 	Callback EventCallback
 	Mutex    sync.Mutex
 }
 
+// EventHandler ...
 type EventHandler func()
+
+// EventCallback ...
 type EventCallback func(interface{}) interface{}
 
+// InitMasterManager ...
 func InitMasterManager() error {
 	Master = &Manager{
 		EventsMap: make(map[string]*Event),
@@ -30,12 +37,14 @@ func InitMasterManager() error {
 	return nil
 }
 
+// InitCustomManager ...
 func InitCustomManager() (*Manager, error) {
 	return &Manager{
 		EventsMap: make(map[string]*Event),
 	}, nil
 }
 
+// NewEvent ...
 func (m *Manager) NewEvent(name string, callback EventCallback) error {
 	var exist bool
 	_, exist = m.EventsMap[name]
@@ -52,6 +61,7 @@ func (m *Manager) NewEvent(name string, callback EventCallback) error {
 	return nil
 }
 
+// ExecEvent ...
 func (m *Manager) ExecEvent(name string) (interface{}, error) {
 	var exist bool
 	_, exist = m.EventsMap[name]
@@ -72,6 +82,7 @@ func (m *Manager) ExecEvent(name string) (interface{}, error) {
 	return m.EventsMap[name].Callback(nil), nil
 }
 
+// Register ...
 func (m *Manager) Register(event string, handler EventHandler) error {
 	var exist bool
 	_, exist = m.EventsMap[event]
@@ -83,6 +94,7 @@ func (m *Manager) Register(event string, handler EventHandler) error {
 	return nil
 }
 
+// Register ...
 func (e *Event) Register(handler EventHandler) {
 	e.Mutex.Lock()
 	e.Handlers = append(e.Handlers, handler)

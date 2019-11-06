@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/kanister10l/GoCraft/db"
 	"github.com/kanister10l/GoCraft/eventmanager"
 
 	"github.com/kanister10l/GoCraft/logger"
@@ -24,6 +25,9 @@ func main() {
 	})
 
 	setupSignal()
+
+	connection := db.Connect("./main.db")
+	connection.InitDatabase()
 
 	<-make(chan bool)
 }
