@@ -8,6 +8,7 @@ import (
 
 	"github.com/kanister10l/GoCraft/db"
 	"github.com/kanister10l/GoCraft/eventmanager"
+	"github.com/kanister10l/GoCraft/runner"
 
 	"github.com/kanister10l/GoCraft/logger"
 )
@@ -28,6 +29,8 @@ func main() {
 
 	connection := db.Connect("./main.db")
 	connection.InitDatabase()
+
+	runner.StartServers(connection, eventmanager.Master)
 
 	<-make(chan bool)
 }

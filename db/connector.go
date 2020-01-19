@@ -47,33 +47,44 @@ func Connect(location string) *Connection {
 
 // InitDatabase ...
 func (c *Connection) InitDatabase() {
-	stm, err := c.Database.Prepare(createTableServers)
-	if err != nil {
-		logger.Logger.Errorw("error preparing statement", "table name", "servers")
-		tracerr.PrintSourceColor(tracerr.Wrap(err))
+	if c.Execute(createTableServers) != nil {
 		eventmanager.Master.ExecEvent("stop")
+		return
+	}
+
+	if c.Execute(createTableServerParameters) != nil {
+		eventmanager.Master.ExecEvent("stop")
+		return
+	}
+
+	if c.Execute(createTableContainerParameters) != nil {
+		eventmanager.Master.ExecEvent("stop")
+		return
+	}
+
+	if c.Execute(createTableVolumes) != nil {
+		eventmanager.Master.ExecEvent("stop")
+		return
+	}
+}
+
+// Execute ...
+func (c *Connection) Execute(statement string) error {
+	stm, err := c.Database.Prepare(statement)
+	if err != nil {
+		logger.Logger.Errorw("error preparing statement", "statement", statement)
+		tracerr.PrintSourceColor(tracerr.Wrap(err))
+		return err
 	}
 
 	_, err = stm.Exec()
 	if err != nil {
-		logger.Logger.Errorw("error creating table", "table name", "servers")
+		logger.Logger.Errorw("error executing statement", "statement", statement)
 		tracerr.PrintSourceColor(tracerr.Wrap(err))
-		eventmanager.Master.ExecEvent("stop")
+		return err
 	}
 
-	stm, err = c.Database.Prepare(createTableServerParameters)
-	if err != nil {
-		logger.Logger.Errorw("error preparing statement", "table name", "server_parameters")
-		tracerr.PrintSourceColor(tracerr.Wrap(err))
-		eventmanager.Master.ExecEvent("stop")
-	}
-
-	_, err = stm.Exec()
-	if err != nil {
-		logger.Logger.Errorw("error creating table", "table name", "server_parameters")
-		tracerr.PrintSourceColor(tracerr.Wrap(err))
-		eventmanager.Master.ExecEvent("stop")
-	}
+	return nil
 }
 
 // Test ...
