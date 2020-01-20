@@ -3,7 +3,6 @@ package runner
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -187,8 +186,6 @@ func (r *Runner) Run() error {
 	variadicSettings := []string{"run", "-dit", "--name", r.Name, "--rm", "-v", vloc + ":/mc", "-p", r.Port + ":25565"}
 	variadicSettings = append(variadicSettings, strings.Split(settings, " ")...)
 	variadicSettings = append(variadicSettings, r.Name)
-
-	log.Println(variadicSettings)
 
 	cmd := exec.Command("docker", variadicSettings...)
 	err = cmd.Run()
